@@ -55,7 +55,7 @@ const Header = () => {
 
 
         {/* Right Button */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-5">
           <Link href="/book-sell">
             <Button
               className="bg-yellow-400 text-gray-800 hover:bg-yellow-500"
