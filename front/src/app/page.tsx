@@ -262,15 +262,15 @@ export default function Home() {
             className="object-cover transition-transform duration-300 hover:scale-105"
           />
         </div>
+            <div className="mx-auto p-5 mt-4 bg-gray-200 rounded-full">
+              {post.icon}
+            </div>
 
         {/* Content Below Image */}
         <div className="p-6 flex flex-col flex-grow">
-          <h3 className="text-xl font-semibold mb-2 flex items-center gap-3">
-            <div className="bg-primary/10 p-2 rounded-full">
-              {post.icon}
-            </div>
-            {post.title}
-          <span className="flex-grow">{post.title}</span>
+          <h3 className="text-xl font-semibold mb-2 flex items-center  text-start">
+            
+          <span className="flex-grow text-center">{post.title}</span>
           </h3>
 
           <p className="text-gray-600 flex-grow">{post.description}</p>
