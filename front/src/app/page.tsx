@@ -1,7 +1,7 @@
 "use client"
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { BookOpen, Library, Store, Camera, Tag, Wallet, Search, CreditCard, Truck, ShoppingBag } from "lucide-react";
+import { BookOpen, Library, Store, Camera, Tag, Wallet, Search, CreditCard, Truck, ShoppingBag ,ArrowRight} from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import NewBooks from "./compo/NewBooks";
@@ -243,21 +243,45 @@ export default function Home() {
       {/* blogs posts*/}
 
       <section className="py-16 bg-[rgb(221,243,254)]">
-    <div className="container mx-auto px-4 ">
+    <div className="container mx-auto px-4 flex justify-center mb-6 text-3xl font-bold">
    <h2>Read from our <span className="text-blue-600">Blog</span></h2>
     </div>
-    <div className="grid md:grid-cols-3 gap-8">
-{blogPosts.map((post,index)=>(
-  <Card key={index} className="h-full flex flex-col overflow-hidden transition-all duration-300 hover:shadow-lg">
-  <CardContent className="p-0 flex flex-col h-full">
-    <div className="relative h-48 overflow-hidden">
-<Image src={post.imageSrc} alt={post.title} fill objectFit="cover" className="transition-tranlate duration-300 hover:scale-105"/>
-    </div>
-  </CardContent>
-  </Card>
-))}
-    </div>
-      </section>
+   <div className="grid md:grid-cols-3 px-6 gap-8">
+  {blogPosts.map((post, index) => (
+    <Card
+      key={index}
+      className="h-full flex flex-col overflow-hidden transition-all duration-300 hover:shadow-lg"
+    >
+      <CardContent className="p-0 flex flex-col h-full">
+        {/* Image Container */}
+        <div className="relative h-48 w-full overflow-hidden">
+          <Image
+            src={post.imageSrc}
+            alt={post.title}
+            fill
+            className="object-cover transition-transform duration-300 hover:scale-105"
+          />
+        </div>
+
+        {/* Content Below Image */}
+        <div className="p-6 flex flex-col flex-grow">
+          <h3 className="text-xl font-semibold mb-2 flex items-center gap-3">
+            <div className="bg-primary/10 p-2 rounded-full">
+              {post.icon}
+            </div>
+            {post.title}
+          <span className="flex-grow">{post.title}</span>
+          </h3>
+
+          <p className="text-gray-600 flex-grow">{post.description}</p>
+          <Button  variant='link' className="mt-4 p-0 flex items-center text-primary"> <ArrowRight/> Read More</Button>
+        </div>
+      </CardContent>
+    </Card>
+  ))}
+</div>
+
+      </section> 
     </div>
   );
 }
