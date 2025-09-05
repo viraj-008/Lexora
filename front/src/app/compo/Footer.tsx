@@ -89,7 +89,7 @@ const Footer = () => {
 
         {/* Security Badges */}
         <div className='mt-12 p-6 rounded-lg'>
-          <h3 className='text-lg font-semibold mb-4 text-center'>Secure & Trusted Payments</h3>
+          <h3 className='text-lg font-semibold mb-4 text-center'>Secure & Trusted Payments </h3>
           <p className='text-gray-400 text-center mb-6'>All transactions are secure and encrypted. We never store your payment details.</p>
 
           <div className='flex flex-wrap justify-center items-center gap-6'>
