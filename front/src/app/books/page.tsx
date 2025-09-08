@@ -11,13 +11,14 @@ import BookLoader from '@/lib/BookLoader'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { motion } from "framer-motion"
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Heart } from 'lucide-react'
 import PagiNation from '../compo/PagiNation'
-import { current } from '@reduxjs/toolkit'
-
+import NoData from '../compo/NoData'
+import { useRouter } from 'next/navigation'
 const page = () => {
+
+  const router = useRouter()
 
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedCondition, setSelectedCondition] = useState<string[]>([])
@@ -25,12 +26,10 @@ const page = () => {
   const [selectedCategory, setSelectedCategory] = useState<string[]>([])
   const [sortOption, setSortOption] = useState('newest')
   const booksPerPage = 6
-
   const [isLoading, seIsLoaging] = useState(false)
 
 
   const toggleFliter = (section: string, items: string) => {
-
     const updateFilter = (prev: string[]) => {
       return prev.includes(items) ? prev.filter((item) => item !== items) : [...prev, items]
     }
@@ -206,7 +205,7 @@ const formatDate = (dateString: string | Date | undefined) => {
                                   <div className='flex items-start justify-between'>
                                     <h3 className='text-lg font-semibold text-orange-500 line-clamp-2'>{book.title}</h3>
                                   </div>
-                                  <p className='text-sm text-gray-500'>{book.auther}</p>
+                                  <p className='text-sm text-gray-500'>{book.author}</p>
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-baseline gap-2">
                                       <span className="text-lg font-bold">Rs {book.finalPrice} </span>
@@ -242,6 +241,13 @@ const formatDate = (dateString: string | Date | undefined) => {
 
               ) : (
                 <>
+                 <NoData
+  imageUrl="/images/no-book.jpg"
+  message="You haven't order any books yet."
+  description="Start order your books to reach potential buyers. order your first book now!"
+  onClick={() => router.push("/books")}
+  buttonText="Order Your First Book"
+/>
                 </>
               )
             }
