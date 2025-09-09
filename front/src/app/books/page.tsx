@@ -28,25 +28,28 @@ const page = () => {
   const booksPerPage = 6
   const [isLoading, seIsLoaging] = useState(false)
 
-
-  const toggleFliter = (section: string, items: string) => {
-    const updateFilter = (prev: string[]) => {
-      return prev.includes(items) ? prev.filter((item) => item !== items) : [...prev, items]
-    }
-    switch (section) {
-      case 'condition':
-        setSelectedCondition(updateFilter)
-        break;
-      case "classType":
-        setSelectedCondition(updateFilter)
-      case "category":
-        setSelectedCategory(updateFilter)
-        break;
-
-    }
-
-    setCurrentPage(1)
+const toggleFliter = (section: string, items: string) => {
+  const updateFilter = (prev: string[]) => {
+    return prev.includes(items) ? prev.filter((item) => item !== items) : [...prev, items]
   }
+
+  switch (section) {
+    case 'condition':
+      setSelectedCondition(updateFilter)
+      break;
+
+    case 'classType':
+      setSelectedType(updateFilter)  
+      break;
+
+    case 'category':
+      setSelectedCategory(updateFilter)
+      break;
+  }
+
+  setCurrentPage(1)
+}
+
 
   const filteredBooks = books.filter((book) => {
     const conditionMatch = selectedCondition.length === 0 || selectedCondition.map((cond) => cond.toLowerCase()).includes(book.condition.toLowerCase());

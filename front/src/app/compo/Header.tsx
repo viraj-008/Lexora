@@ -36,7 +36,7 @@ const Header = () => {
 
   const router = useRouter()
   const dispatch = useDispatch()
-  const isLoggedOpen = useSelector((state: RootState) => state.user.isLoginDialogOpen)
+  const isLoggedOpen = useSelector((state:RootState) => state.user.isLoginDialogOpen)
 
   const [isDropDownOpen, setisDropDownOpen] = useState(false);
 
