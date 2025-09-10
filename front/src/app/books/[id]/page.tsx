@@ -6,8 +6,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Heart, Loader2, MapPin, MessageCircle, ShoppingCart } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader,CardDescription ,CardTitle } from "@/components/ui/card";
 import { User2 } from "lucide-react";
+import { ItemIndicator } from "@radix-ui/react-dropdown-menu";
 
 const Page = () => {
   const params = useParams();
@@ -265,6 +266,61 @@ const Page = () => {
         </div>
       </div>
     </div>
+
+    {/* how it works sections */}
+
+
+<section className="mt-16">
+  <h1 className="mb-8 text-2xl ml-4 font-bold"> How it works ? </h1>
+  <div className="grid gap-8  md:grid-cols-3">
+{
+[
+  
+    {
+      step: "Step 1",
+      title: "Seller posts an Ad",
+      description:
+        "Seller posts an ad on book kart to sell their used books.",
+      image: { src: "/icons/ads.png", alt: "Post Ad" },
+    },
+    {
+      step: "Step 2",
+      title: "Buyer Pays Online",
+      description:
+        "Buyer makes an online payment to book kart to buy those books.",
+      image: { src: "/icons/pay_online.png", alt: "Payment" },
+    },
+    {
+      step: "Step 3",
+      title: "Seller ships the books",
+      description: "Seller then ships the books to the buyer",
+      image: { src: "/icons/fast-delivery.png", alt: "Shipping" },
+    },
+ 
+].map((item,index)=>(
+  <Card className="bg-amber-100 border-none"> 
+ 
+  <CardHeader >
+    <div>{item.step}</div>
+  <CardTitle className="text-lg">{item.title}</CardTitle>
+  <CardDescription>{item.description}</CardDescription>
+  </CardHeader>
+
+   <CardContent className="space-y-4">
+  <Image
+   src={item.image.src}
+   alt={item.title}
+   width={120}
+   height={120}
+   className="mx-auto"
+  />
+   </CardContent>
+  </Card>
+))
+}
+  </div>
+  </section>
+
   </div>
 </div>
   );

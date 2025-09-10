@@ -28,6 +28,7 @@ import { useSelector } from "react-redux"
 import { RootState } from "@reduxjs/toolkit/query"
 import { toggleLoginDialog } from "@/store/slice/userSlice"
 import { useRouter } from "next/navigation"
+import AuthPage from "./AuthPage"
 
 
 
@@ -42,8 +43,8 @@ const Header = () => {
 
   const user = {
     ProfilePicture: "",
-    Name: "vivek",
-    Email: "viraj@gmail.com"
+    Name: "",
+    Email: ""
   }
 
   const userPlaceholder = ""
@@ -53,6 +54,7 @@ const Header = () => {
     setisDropDownOpen(false)
   }
 
+  console.log(isLoggedOpen,"openornot")
   const handleProtectionNavigation = (href: string) => {
     if (user) {
       router.push(href)
@@ -98,6 +100,11 @@ const Header = () => {
           label: "Login/sign up",
           onClick: handleLoginClick,
         }]),
+         {
+          icon: <Lock className="h-5  w-5" />,
+          label: "Login/sign up",
+          onClick: handleLoginClick,
+        },
 
     {
       icon: <User className="h-5  w-5" />,
@@ -368,6 +375,8 @@ const Header = () => {
 
 
       </div>
+
+      <AuthPage isLoggedOpen={isLoggedOpen} setIsLoginOpen={handleLoginClick}/>
     </header>
   )
 
