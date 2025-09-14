@@ -118,7 +118,7 @@ export default function Home() {
 
         <div className="relative container mx-auto h-full flex flex-col items-center justify-center text-white text-center px-4">
           <h1 className="text-4xl sm:text-5xl font-serif mb-8 drop-shadow-md">
-            Buy and Sell Old Books Online in India
+            you can Buy and Sell Old Books Online in India 
           </h1>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             {/* Buy Books Button */}
@@ -150,7 +150,7 @@ export default function Home() {
                 </div>
                 <Link href="/books">
                   <div className="text-left text-white">
-                    <div className="text-sm opacity-90">Start Selling</div>
+                    <div className="text-sm opacity-90">Starttt Selling</div>
                     <div className="font-semibold">Sell Old Books</div>
                   </div>
                 </Link>
