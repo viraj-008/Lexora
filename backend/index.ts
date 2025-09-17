@@ -13,7 +13,7 @@ const PORT=process.env.PORT || 8080
 const app = express();
 const corsOption ={
     origin:process.env.FRONTEND_URL,
-    credential:true
+    credentials: true 
 }
 
 app.use(cors(corsOption));
@@ -24,6 +24,7 @@ app.use(cookiesParser())
 connectDB()
 
 app.use('/api/auth',authRoutes)
+
 app.listen(PORT,()=>{
     console.log('server run on =>',PORT)
 })

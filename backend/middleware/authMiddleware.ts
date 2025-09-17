@@ -1,0 +1,35 @@
+import { Response,Request,NextFunction } from "express"
+import { response } from '../utils/responseHandler'
+import  Jwt  from "jsonwebtoken"
+
+declare global {
+    namespace Express{
+        interface Request{
+        id:string
+        }
+    }
+}
+const authenticateUser = async (req:Request,res:Response,next:NextFunction)=>{
+    const token = req.cookies.access_cookie
+    if(!token){
+        return response(res,400,"user not authenticate ,or token not available")
+    }
+
+    try{
+
+        const decode = Jwt.verify(token,process.env.JWR_SECRET as string) as Jwt.JwtPayload
+        if(!decode){
+            return response(res,401,'Not authorized, user not found')
+
+        }
+
+        req.id=decode.userId;
+        next()
+    }catch(error){
+        console.log(error)
+          return response(res,401,'Not authorized, token not valid  or expired')
+
+    }
+}
+
+export {authenticateUser}
