@@ -152,23 +152,23 @@ export const logout = async (req:Request,res:Response)=>{
 }
 
 export const checkUserAuth = async (req:Request,res:Response)=>{
+    try{
+        const userId = req?.id
+        if(!userId){
+            return response(res,400,"Unauthenticated please login to access our data")
+        }
 
-       try{
+        const user = await User.findById(userId).select(
+          "-password -veryficationToken -resetPasswordToken -resetPasswordExpires"
+        )
 
-         const userId=req?.id
-         if(!userId){
-          return response(res,400,"Unauthenticated please login to access our data")
-         }
+        if(!user){
+            return response(res,403,'user not found')
+        }
 
-         const user = User.findById(userId).select('-password -veryficationToken -resetPasswordToken, -resetPasswordExpires')
-         if(!user){
-          response(res,403,'user not found')
-         }
-
-         return response (res,201,'User retrived successfully',user)
-       }
-       catch(error){
-        return response (res,401,'Not Authorized, token not valid or expired')
-
-       }  
-}    
+        return response(res,201,'User retrived successfully',user)
+    }
+    catch(error){
+        return response(res,401,'Not Authorized, token not valid or expired')
+    }  
+}

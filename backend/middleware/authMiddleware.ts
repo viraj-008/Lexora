@@ -10,25 +10,22 @@ declare global {
     }
 }
 const authenticateUser = async (req:Request,res:Response,next:NextFunction)=>{
-    const token = req.cookies.access_cookie
+    const token = req.cookies.cookie_token   // 👈 same naam as login
     if(!token){
         return response(res,400,"user not authenticate ,or token not available")
     }
 
     try{
-
         const decode = Jwt.verify(token,process.env.JWR_SECRET as string) as Jwt.JwtPayload
         if(!decode){
             return response(res,401,'Not authorized, user not found')
-
         }
 
-        req.id=decode.userId;
+        req.id = decode.userId;
         next()
     }catch(error){
         console.log(error)
-          return response(res,401,'Not authorized, token not valid  or expired')
-
+        return response(res,401,'Not authorized, token not valid  or expired')
     }
 }
 

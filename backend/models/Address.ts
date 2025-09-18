@@ -1,7 +1,5 @@
 import mongoose,{Document, Schema} from "mongoose";
 
-
-
 export interface  IAddress extends Document {
  user:mongoose.Types.ObjectId,
  addressLine1:string,

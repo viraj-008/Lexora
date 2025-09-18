@@ -16,6 +16,6 @@ router.post('/reset-password/:token',authController.resetPassword)
 
 router.get('/logout',authController.logout)
 
-router.get('/veryfy-auth',authenticateUser,authController.checkUserAuth)  
-// 9-7 time
+router.get('/verify-auth',authenticateUser,authController.checkUserAuth)  
+
 export default router;
