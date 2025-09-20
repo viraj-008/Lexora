@@ -36,7 +36,7 @@ export const addToCart = async (req:Request,res:Response)=>{
              } 
 
              cart.save();
-             return response(res,200,'Item added to cart succesfully')
+             return response(res,200,'Item added to cart succesfully',cart)
 
 
         }catch(error){
@@ -58,6 +58,7 @@ export const removeFromCart = async (req:Request,res:Response)=>{
 
 
              cart.items =cart.items.filter((item)=>item.product.toString() !== productId)
+             await cart.save();
         return response(res,200,'Item removed to cart succesfully')
 
 

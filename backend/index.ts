@@ -7,6 +7,7 @@ import connectDB from './config/dbConnection'
 import authRoutes from './routes/authRoute'
 import ProductsRoutes from './routes/productRoute'
 import cartRoute from './routes/cartRoute'
+import wishListRoutes from './routes/wishListRouts'
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ connectDB()
 app.use('/api/auth',authRoutes)
 app.use('/api/product',ProductsRoutes)
 app.use('/api/cart',cartRoute)
+app.use('/api/wishlist',wishListRoutes)
 
 app.listen(PORT,()=>{
     console.log('server run on =>',PORT)
