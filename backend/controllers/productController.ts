@@ -85,6 +85,7 @@ export const CreateProduct = async (req: Request, res: Response) => {
 };
 
 export const getAllProducts = async (req: Request, res: Response) => {
+  
   try {
     const products = await Products.find()
       .sort({ createdAt: -1 })

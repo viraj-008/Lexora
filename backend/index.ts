@@ -8,6 +8,9 @@ import authRoutes from './routes/authRoute'
 import ProductsRoutes from './routes/productRoute'
 import cartRoute from './routes/cartRoute'
 import wishListRoutes from './routes/wishListRouts'
+import addressRoutes from './routes/addressRoute'
+import userRoutes from './routes/userRoutes'
+import orderRoutes from './routes/orderRoutes'
 
 dotenv.config();
 
@@ -30,6 +33,9 @@ app.use('/api/auth',authRoutes)
 app.use('/api/product',ProductsRoutes)
 app.use('/api/cart',cartRoute)
 app.use('/api/wishlist',wishListRoutes)
+app.use('/api/user/address',addressRoutes)
+app.use('/api/user',userRoutes)
+app.use('/api/order',orderRoutes)
 
 app.listen(PORT,()=>{
     console.log('server run on =>',PORT)
