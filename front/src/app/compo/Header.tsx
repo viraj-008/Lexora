@@ -25,10 +25,12 @@ import {
 } from "@/components/ui/sheet"
 import { useDispatch } from "react-redux"
 import { useSelector } from "react-redux"
-import { RootState } from "@reduxjs/toolkit/query"
-import { toggleLoginDialog } from "@/store/slice/userSlice"
+import { RootState } from "@/store/store"
+import { toggleLoginDialog, logOut } from "@/store/slice/userSlice"
+import { useLogoutMutation } from "@/store/api"
 import { useRouter } from "next/navigation"
 import AuthPage from "./AuthPage"
+import toast from "react-hot-toast"
 
 
 
@@ -40,13 +42,8 @@ const Header = () => {
   const isLoggedOpen = useSelector((state:RootState) => state.user.isLoginDialogOpen)
 
   const [isDropDownOpen, setisDropDownOpen] = useState(false);
-
-  const user = {
-    ProfilePicture: "",
-    Name: "",
-    Email: ""
-  }
-
+   const user = useSelector((state:RootState)=>state.user.user)
+   console.log(user)
   const userPlaceholder = ""
 
   const handleLoginClick = () => {
@@ -65,53 +62,69 @@ const Header = () => {
       setisDropDownOpen(false)
     }
   }
+  // build menu items cleanly
+  const [logoutMutation] = useLogoutMutation();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await logoutMutation().unwrap();
+    } catch (err) {
+      // ignore server errors, still clear client state
+      console.error("logout failed", err);
+    } finally {
+      dispatch(logOut());
+      
+      setisDropDownOpen(false);
+      toast.success("Logged out successfully");
+      router.push("/");
+    }
+  };
 
+  const getInitials = (name?: string) => {
+    if (!name) return "U";
+    const parts = name.trim().split(" ");
+    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  };
+
+  const menuItems: any[] = [];
+
+  if (user) {
+    // profile header content
+    menuItems.push({
+      href: "/account/profile",
+      content: (
+        <div className="flex space-x-4 items-center p-2 border-b">
+          <Avatar className="w-12 h-12 -ml-2 rounded-full">
+            {user.ProfilePicture ? (
+              <AvatarImage src={user.ProfilePicture} alt="user_image" />
+            ) : (
+              <AvatarFallback>{getInitials(user.Name || user.name)}</AvatarFallback>
+            )}
+          </Avatar>
+
+          <div className="flex flex-col">
+            <span className="font-semibold text-md">{user.Name || user.name}</span>
+            <span className="text-gray-500 text-xs">{user.Email || user.email}</span>
+          </div>
+        </div>
+      ),
+    });
+  } else {
+    menuItems.push({
+      icon: <Lock className="h-5  w-5" />,
+      label: "Login / Sign up",
+      onClick: handleLoginClick,
+    });
   }
 
-
-  const menuItems = [
-    ...(user && user
-      ? [
-        {
-          href: "account/profile",
-          content: (
-            <div className="flex space-x-4 items-center p-2 border-b">
-              <Avatar className="w-12 h-12 -ml-2 rounded-full">
-                {user.ProfilePicture ? (
-                  <AvatarImage src={user.ProfilePicture} alt="user_image" />
-                ) : (
-                  <AvatarFallback>{userPlaceholder}</AvatarFallback>
-                )}
-              </Avatar>
-
-              <div className="flex flex-col">
-                <span className="font-semibold text-md">{user.Name}</span>
-                <span className="text-gray-500 text-xs">{user.Email}</span>
-              </div>
-            </div>
-          ),
-        },
-      ]
-      : [
-        {
-          icon: <Lock className="h-5  w-5" />,
-          label: "Login/sign up",
-          onClick: handleLoginClick,
-        }]),
-         {
-          icon: <Lock className="h-5  w-5" />,
-          label: "Login/sign up",
-          onClick: handleLoginClick,
-        },
-
+  // common navigation items
+  menuItems.push(
     {
       icon: <User className="h-5  w-5" />,
       label: "My Profile",
       onClick: () => handleProtectionNavigation("/account/profile"),
     },
-
     {
       icon: <Package className="h-5 w-5" />,
       label: "My Orders",
@@ -120,8 +133,7 @@ const Header = () => {
     {
       icon: <PiggyBank className="h-5 w-5" />,
       label: "My Sellings Orders",
-      onClick: () =>
-        handleProtectionNavigation("/account/sellings-products"),
+      onClick: () => handleProtectionNavigation("/account/sellings-products"),
     },
     {
       icon: <ShoppingCartIcon className="h-5 w-5" />,
@@ -152,16 +164,16 @@ const Header = () => {
       icon: <HelpCircle className="h-5 w-5" />,
       label: "Help",
       href: "/how-it-works",
-    },
-    ...(user && [
-      {
-        icon: <LogOut className="h-5 w-5" />,
-        label: "Logout",
-        onClick: handleLogout,
-      },
-    ]
-    ),
-  ]
+    }
+  );
+
+  if (user) {
+    menuItems.push({
+      icon: <LogOut className="h-5 w-5" />,
+      label: "Logout",
+      onClick: handleLogout,
+    });
+  }
 
 
 
@@ -278,7 +290,7 @@ const Header = () => {
                     <User className="h- w-6" />
                   )}
                 </Avatar>
-                <span className="text-sm font-medium">My Account</span>
+                <span className="text-sm font-medium">{user ? (user.Name || user.name) : 'My Account'}</span>
               </div>
 
               {/* Right side Arrow */}

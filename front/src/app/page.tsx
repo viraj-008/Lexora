@@ -109,7 +109,7 @@ export default function Home() {
               src={src}
               alt={`Banner Image ${index + 1}`}
               priority={index === 0}
-              fill
+              fill={true}
               className="object-cover"
             />
             <div className="absolute inset-0 bg-black/60"></div>
@@ -255,12 +255,12 @@ export default function Home() {
       <CardContent className="p-0 flex flex-col h-full">
         {/* Image Container */}
         <div className="relative h-48 w-full overflow-hidden">
-          <Image
+          {/* <Image
             src={post.imageSrc}
             alt={post.title}
-            fill
+            fill={true}
             className="object-cover transition-transform duration-300 hover:scale-105"
-          />
+          /> */}
         </div>
             <div className="mx-auto p-5 mt-4 bg-gray-200 rounded-full">
               {post.icon}

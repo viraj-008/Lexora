@@ -23,6 +23,28 @@ export const  register = async(req:Request,res:Response)=>{
               await user.save()
               const result = await sendVerificationToEmail(user.email,verificationToken)
                  console.log(result)
+
+              // Development helpers:
+              // 1) If AUTO_VERIFY=true, mark user verified immediately and set auth cookie (dev only)
+              if(process.env.AUTO_VERIFY === 'true'){
+                user.isVerified = true
+                user.verificationToken = ""
+                await user.save()
+                const accessToken = generateToken(user)
+                res.cookie(`cookie_token`,accessToken,{
+                  httpOnly:true,
+                  secure: process.env.NODE_ENV === 'production',
+                  maxAge:24*60*60*1000
+                })
+                return response(res,200,'user registered and auto-verified',{user:{name:user.name,email:user.email}})
+              }
+
+              // 2) In non-production, return the verification token in the response so you can verify manually during testing
+              const respData: any = null
+              if(process.env.NODE_ENV !== 'production'){
+                return response(res,200,'user registration successfully ,  pleas check your email box to verify your account',{verificationToken:verificationToken})
+              }
+
               return response(res,200,'user registration successfully ,  pleas check your email box to verify your account')
           }catch(err){
          console.log(err)
@@ -67,6 +89,7 @@ export const login = async (req:Request,res:Response)=>{
  
     try{
       const {email,password} = req.body
+    
       const user = await User.findOne({email})
       if(!user || !(await user.comparePassword(password))) {
         return response(res,400,"invalid email or password")
@@ -140,9 +163,9 @@ export const resetPassword = async (req:Request,res:Response)=>{
 
 export const logout = async (req:Request,res:Response)=>{
                 try{
-                   res.clearCookie("access_cookie",{
-                  httpOnly:true,
-                   })
+             res.clearCookie("cookie_token",{
+            httpOnly:true,
+             })
 
                    return response(res,200,"succesfully logout")
                 }catch(error){

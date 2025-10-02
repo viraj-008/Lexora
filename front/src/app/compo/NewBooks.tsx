@@ -61,7 +61,7 @@ function NewBooks() {
                                     src={
                                       book.images && book.images.length > 0
                                         ? book.images[0]
-                                        : '/placeholder-book.jpg'
+                                        : '/'
                                     }
                                     alt={book.title}
                                     fill

@@ -11,7 +11,8 @@ const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY as string,
   key_secret: process.env.RAZORPAY_KEY_SECRET as string,
 });
-
+// rzp_test_RMBKHLX8Bqpkes key id
+// FmYMh3ZUT6IkzCkzBC1YUfzk secret 
 export const createOrUpdateOrder = async (req: Request, res: Response) => {
   try {
     const userId = req.id;
