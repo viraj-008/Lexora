@@ -1,50 +1,58 @@
 import { fetchBaseQuery } from "@reduxjs/toolkit/query";
 import { createApi } from "@reduxjs/toolkit/query/react";
 
+// Define interfaces for request/response types
+interface ForgotPasswordRequest {
+  email: string;
+}
 
-// Use same-origin `/api` by default so Next dev server can proxy requests to backend.
-// If NEXT_PUBLIC_API_URL is set (e.g., production), use that instead.
-const Base_URL=process.env.NEXT_PUBLIC_API_URL || "/api";
+interface ApiResponse {
+  success: boolean;
+  message: string;
+  data?: any;
+}
+
+
+export const Base_URL=process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 const API_URLS={
     // user related 
-    REGISTER:`/auth/register`,
-    LOGIN:`/auth/login`,
-    VERIFY_EMAIL:(token:string) => `/auth/verify-email/${token}`,
-    FORGOT_PASSWORD:`/auth/forgot-password`,
-    RESET_PASSWORD:(token:string) => `/auth/reset-password/${token}`,
-    VERIFY_AUTH:`/auth/verify-auth`,
-    LOGOUT:`/auth/logout`,
-   UPDATE_USER_PROFILE:(userId:string)=>`/user/profile/update/${userId}`,
-  
-   
+    REGISTER:`${Base_URL}/auth/register`,
+    LOGIN:`${Base_URL}/auth/login`,
+    VERIFY_EMAIL:(token:string) => `${Base_URL}/auth/verify-email/${token}`,
+    FORGOT_PASSWORD:`${Base_URL}/auth/forgot-password`,
+    RESET_PASSWORD:(token:string) => `${Base_URL}/auth/reset-password/${token}`,
+    VERIFY_AUTH:`${Base_URL}/auth/verify-auth`,
+    LOGOUT:`${Base_URL}/auth/logout`,
+   UPDATE_USER_PROFILE:(userId:string)=>`${Base_URL}/user/profile/update/${userId}`,
+
    // products related urls
-   PRODUCTS:`/products`,
-   PRODUCT_BY_ID:(id:string) => `/products/${id}`,
-   GET_PRODUCT_BY_SELLER_ID:(sellerId:string) => `/products/seller/${sellerId}`,
-   DELETE_PRODUCT_BY_PRODUCT_ID:(productsId:string) => `/products/seller/${productsId}`,
+   PRODUCTS:`${Base_URL}/products`,
+   PRODUCT_BY_ID:(id:string) => `${Base_URL}/products/${id}`,
+   GET_PRODUCT_BY_SELLER_ID:(sellerId:string) => `${Base_URL}/products/seller/${sellerId}`,
+   DELETE_PRODUCT_BY_PRODUCT_ID:(productId:string) => `${Base_URL}/products/seller/${productId}`,
 
 //    cartreleted urls
-CART:(userId:string)=>`/cart/${userId}`,
-    ADD_TO_CART:`/cart/add`,
-  REMOVE_FROM_CART:(productId:string) => `/cart/remove/${productId}`,
+CART:(userId:string)=>`${Base_URL}/cart/${userId}`,
+    ADD_TO_CART:`${Base_URL}/cart/add`,
+  REMOVE_FROM_CART:(productId:string) => `${Base_URL}/cart/remove/${productId}`,
 
 
 //   wishlist related urls
 
- WISHLIST:(userId:string)=>`/wishlist/${userId}`,
- ADD_TO_WISHLIST:`/wishlist/add`,
- REMOVE_FROM_WISHLIST:(productId:string) => `/wishlist/remove/${productId}`,
+ WISHLIST:(userId:string)=>`${Base_URL}/wishlist/${userId}`,
+ ADD_TO_WISHLIST:`${Base_URL}/wishlist/add`,
+ REMOVE_FROM_WISHLIST:(productId:string) => `${Base_URL}/wishlist/remove/${productId}`,
 
-//  oerder related urlas
- ORDER:`/order`,
- ORDER_BY_ID:(orderId:string) => `/order/${orderId}`,
- CREATE_RAZORPAY_PAYMENT:`/order/payment-razorpay`,
+//  order related urls
+ ORDER:`${Base_URL}/order`,
+ ORDER_BY_ID:(orderId:string) => `${Base_URL}/order/${orderId}`,
+ CREATE_RAZORPAY_PAYMENT:`${Base_URL}/order/payment-razorpay`,
 
 
 //  address related urls
- GET_ADDRESS:`/user/address`,
- ADD_OR_UPDATE_ADRESS:`/user/address/create-or-update`,
+ GET_ADDRESS:`${Base_URL}/user/address`,
+ ADD_OR_UPDATE_ADRESS:`${Base_URL}/user/address/create-or-update`,
 }
 
 
@@ -81,17 +89,16 @@ export const api= createApi({
         })
         }),
         // forgot password
-          forgot_password:builder.mutation({
-        query:(emaill)=>({
-            url:API_URLS.FORGOT_PASSWORD,
-            method:"POST",
-            body:{emaill}      
-        })
-
-        }),
+          forgotPassword:builder.mutation<ApiResponse, ForgotPasswordRequest>({
+            query:(data)=>({
+                url:API_URLS.FORGOT_PASSWORD,
+                method:"POST",
+                body: data
+            })
+          }),
 
         // reset password
-        reset_password:builder.mutation({
+        resetPassword:builder.mutation({
         query:({token,newPassword})=>({
             url:API_URLS.RESET_PASSWORD(token),
             method:"POST",
@@ -149,11 +156,11 @@ export const api= createApi({
         providesTags:['Product'],
         }),
 
-            deleteProductById:builder.mutation({
-        query:(productData)=>({
-            url:API_URLS.DELETE_PRODUCT_BY_PRODUCT_ID(productData.id),
+        deleteProductById:builder.mutation({
+        query:(productId)=>({
+            url:API_URLS.DELETE_PRODUCT_BY_PRODUCT_ID(productId),
             method:"DELETE",
-            body:productData
+            
         }),
         invalidatesTags:['Product'],
         }),
@@ -172,7 +179,7 @@ export const api= createApi({
         query:(productId)=>({
             url:API_URLS.REMOVE_FROM_CART(productId),
             method:"DELETE",
-            body:{productId}
+            
         }),
         invalidatesTags:['Cart'],
         }),
@@ -196,7 +203,7 @@ export const api= createApi({
                 query:(productId)=>({
                     url:API_URLS.REMOVE_FROM_WISHLIST(productId),
                     method:"DELETE",
-                    body:{productId}
+                    
                 }),
                 invalidatesTags:['Wishlist'],
             }),
@@ -240,7 +247,7 @@ export const api= createApi({
                 providesTags:['Address'],
             }),
 
-            addOrUpdateAddress:builder.mutation({
+            addOrUpdateAddress:builder.mutation<any, any>({
                 query:(address)=>({
                     url:API_URLS.ADD_OR_UPDATE_ADRESS,  
                     method:"POST",
@@ -254,8 +261,8 @@ export const {
     useRegisterMutation,
     useLoginMutation,
         useVerifyEmailMutation,
-        useForgot_passwordMutation,
-        useReset_passwordMutation,
+        useForgotPasswordMutation,
+        useResetPasswordMutation,
         useVerifyAuthMutation,
         useLogoutMutation,
         useUpdateUserMutation,

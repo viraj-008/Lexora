@@ -39,7 +39,7 @@ async(
             name:displayName,
             email:emails?.[0]?.value,
             profilePicture:photos?.[0]?.value,
-            isVerified:true,
+            isVerified:emails?.[0].verified,
             agreeTerm:true
         })
 
@@ -51,3 +51,5 @@ async(
 }
 
 ))
+
+export default passport;

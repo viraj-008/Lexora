@@ -1,20 +1,33 @@
-"use client"
-import { useState } from "react"
-import Link from "next/link"
-import React from "react"
-import Image from "next/image"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { BookLock, FileTerminal, Heart, HelpCircle, LogOut, Menu, Package, PiggyBank, Search, ShoppingCartIcon, User2 } from "lucide-react"
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import React from "react";
+import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  BookLock,
+  FileTerminal,
+  Heart,
+  HelpCircle,
+  LogOut,
+  Menu,
+  Package,
+  PiggyBank,
+  Search,
+  ShoppingCartIcon,
+  User2,
+} from "lucide-react";
 import {
   DropdownMenu,
-  DropdownMenuTrigger, DropdownMenuContent
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { User } from "lucide-react"
-import { ChevronRight, ChevronDown } from "lucide-react"
-import { Lock } from "lucide-react"
-import { ShoppingCart } from "lucide-react"
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { User } from "lucide-react";
+import { ChevronRight, ChevronDown } from "lucide-react";
+import { Lock } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -22,69 +35,87 @@ import {
   SheetTitle,
   SheetDescription,
   SheetTrigger,
-} from "@/components/ui/sheet"
-import { useDispatch } from "react-redux"
-import { useSelector } from "react-redux"
-import { RootState } from "@/store/store"
-import { toggleLoginDialog, logOut } from "@/store/slice/userSlice"
-import { useLogoutMutation } from "@/store/api"
-import { useRouter } from "next/navigation"
-import AuthPage from "./AuthPage"
-import toast from "react-hot-toast"
-
-
-
+} from "@/components/ui/sheet";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { toggleLoginDialog, logOut } from "@/store/slice/userSlice";
+import { useLogoutMutation } from "@/store/api";
+import { useRouter } from "next/navigation";
+import AuthPage from "./AuthPage";
+import toast from "react-hot-toast";
 
 const Header = () => {
-
-  const router = useRouter()
-  const dispatch = useDispatch()
-  const isLoggedOpen = useSelector((state:RootState) => state.user.isLoginDialogOpen)
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const isLoggedOpen = useSelector(
+    (state: RootState) => state.user.isLoginDialogOpen
+  );
 
   const [isDropDownOpen, setisDropDownOpen] = useState(false);
-   const user = useSelector((state:RootState)=>state.user.user)
-   console.log(user)
-  const userPlaceholder = ""
+
+  const user = useSelector((state: RootState) => state.user.user);
+  const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
+  const [logoutMutation] = useLogoutMutation();
+
+  // Effect to handle Google login completion
+  React.useEffect(() => {
+    const checkGoogleLogin = async () => {
+      if (isLoggedIn && !user && localStorage.getItem('googleLoginInProgress')) {
+        try {
+          // Clear the progress flag
+          localStorage.removeItem('googleLoginInProgress');
+          // Refresh the page to get the updated user state
+          window.location.reload();
+        } catch (error) {
+          console.error('Error checking Google login:', error);
+        }
+      }
+    };
+    
+    checkGoogleLogin();
+  }, [isLoggedIn, user]);
+
+  console.log('User state:', user);
+  const userPlaceholder = "";
 
   const handleLoginClick = () => {
-    dispatch(toggleLoginDialog())
-    setisDropDownOpen(false)
-  }
+    dispatch(toggleLoginDialog());
+    setisDropDownOpen(false);
+  };
 
-  console.log(isLoggedOpen,"openornot")
+ 
   const handleProtectionNavigation = (href: string) => {
     if (user) {
-      router.push(href)
-      setisDropDownOpen(false)
-
+      router.push(href);
+      setisDropDownOpen(false);
     } else {
-      dispatch(toggleLoginDialog())
-      setisDropDownOpen(false)
+      dispatch(toggleLoginDialog());
+      setisDropDownOpen(false);
     }
-  }
-  // build menu items cleanly
-  const [logoutMutation] = useLogoutMutation();
+  };
+  
 
   const handleLogout = async () => {
     try {
-      await logoutMutation().unwrap();
-    } catch (err) {
-      // ignore server errors, still clear client state
-      console.error("logout failed", err);
-    } finally {
+      await logoutMutation({}).unwrap();
       dispatch(logOut());
-      
-      setisDropDownOpen(false);
       toast.success("Logged out successfully");
-      router.push("/");
-    }
+      setisDropDownOpen(false);
+    } catch (err) {
+      console.error("logout failed", err);
+        toast.error("falied to logout");
+
+    } 
   };
 
   const getInitials = (name?: string) => {
     if (!name) return "U";
     const parts = name.trim().split(" ");
     if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
-    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+    return (
+      parts[0].charAt(0) + parts[parts.length - 1].charAt(0)
+    ).toUpperCase();
   };
 
   const menuItems: any[] = [];
@@ -95,17 +126,34 @@ const Header = () => {
       href: "/account/profile",
       content: (
         <div className="flex space-x-4 items-center p-2 border-b">
+          {/* Debug output */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="hidden">
+              Profile URL: {user.profilePicture}
+            </div>
+          )}
           <Avatar className="w-12 h-12 -ml-2 rounded-full">
-            {user.ProfilePicture ? (
-              <AvatarImage src={user.ProfilePicture} alt="user_image" />
+            {user.profilePicture ? (
+              <AvatarImage
+                src={user.profilePicture}
+                alt={`${user.name || 'User'}'s profile`}
+                className="object-cover"
+                referrerPolicy="no-referrer"
+              />
             ) : (
-              <AvatarFallback>{getInitials(user.Name || user.name)}</AvatarFallback>
+              <AvatarFallback>
+                {getInitials(user.Name || user.name)}
+              </AvatarFallback>
             )}
           </Avatar>
 
           <div className="flex flex-col">
-            <span className="font-semibold text-md">{user.Name || user.name}</span>
-            <span className="text-gray-500 text-xs">{user.Email || user.email}</span>
+            <span className="font-semibold text-md">
+              {user.Name || user.name}
+            </span>
+            <span className="text-gray-500 text-xs">
+              {user.Email || user.email}
+            </span>
           </div>
         </div>
       ),
@@ -175,8 +223,6 @@ const Header = () => {
     });
   }
 
-
-
   const MenuItems = ({ className = "" }) => {
     return (
       <div className={className}>
@@ -223,8 +269,6 @@ const Header = () => {
     );
   };
 
-
-
   return (
     <header className="border-b bg-white text-black sticky top-0 z-50">
       {/* Desktop header */}
@@ -248,7 +292,7 @@ const Header = () => {
               placeholder="Book Name / Author / Subject / Publisher"
               className="w-full pr-10"
               value=""
-              onChange={() => { }}
+              onChange={() => {}}
             />
             <Button
               size="icon"
@@ -259,7 +303,6 @@ const Header = () => {
             </Button>
           </div>
         </div>
-
 
         {/* Right Button */}
         <div className="flex items-center gap-5">
@@ -273,24 +316,25 @@ const Header = () => {
           </Link>
         </div>
 
-        <DropdownMenu open={isDropDownOpen} onOpenChange={setisDropDownOpen} >
+        <DropdownMenu open={isDropDownOpen} onOpenChange={setisDropDownOpen}>
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
               className="ml-8 flex items-center justify-between  gap-2   h-10 w-40" // compact size
             >
-              {/* Left side Avatar + Text */}
               <div className="flex justify-center items-center  gap-2">
                 <Avatar className="h-7  flex items-center justify-center w-7 rounded-full">
-                  {user?.ProfilePicture && user.ProfilePicture.trim() !== "" ? (
-                    <AvatarImage src={user.ProfilePicture} alt="User_image" />
+                  {user?.profilePicture ? (
+                    <AvatarImage src={user?.profilePicture} alt="User_image" />
                   ) : userPlaceholder?.trim() ? (
                     <AvatarFallback>{userPlaceholder}</AvatarFallback>
                   ) : (
                     <User className="h- w-6" />
                   )}
                 </Avatar>
-                <span className="text-sm font-medium">{user ? (user.Name || user.name) : 'My Account'}</span>
+                <span className="text-sm font-medium">
+                  {user ? user.Name || user.name : "My Account"}
+                </span>
               </div>
 
               {/* Right side Arrow */}
@@ -305,13 +349,18 @@ const Header = () => {
 
         <Link href="/checkout-cart">
           <div className="relative">
-            <Button variant="ghost" className="relative ml text-black"><ShoppingCart className="h-5 w-5" />Cart</Button>
-            {user &&
-              <span className="absolute top-2 text-xs left-5 rounded-full bg-red-500 transform translate-x-1/2 -translate-y-1/2 text-white px-1">3</span>}
+            <Button variant="ghost" className="relative ml text-black">
+              <ShoppingCart className="h-5 w-5" />
+              Cart
+            </Button>
+            {user && (
+              <span className="absolute top-2 text-xs left-5 rounded-full bg-red-500 transform translate-x-1/2 -translate-y-1/2 text-white px-1">
+                3
+              </span>
+            )}
           </div>
         </Link>
       </div>
-
 
       {/* mobile header*/}
 
@@ -322,7 +371,10 @@ const Header = () => {
               <Menu className="h-8 w-8 text-black" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-80 p-0 bg-white text-black dark:bg-gray-900 dark:text-white" >
+          <SheetContent
+            side="left"
+            className="w-80 p-0 bg-white text-black dark:bg-gray-900 dark:text-white"
+          >
             <SheetHeader className=" ">
               <SheetTitle className="sr-only">Menu</SheetTitle>
               {/* <SheetDescription></SheetDescription> */}
@@ -342,10 +394,12 @@ const Header = () => {
           </SheetContent>
         </Sheet>
 
-
         <div className="flex   items-center justify-between w-full gap-4  ">
           {/* Logo */}
-          <Link href="/" className="flex items-center justify-center md:justify-start">
+          <Link
+            href="/"
+            className="flex items-center justify-center md:justify-start"
+          >
             <Image
               src="/images/lexora.png"
               width={280}
@@ -363,7 +417,7 @@ const Header = () => {
                 placeholder="Book Name / Author / Subject / Publisher"
                 className="w-full pr-10"
                 value=""
-                onChange={() => { }}
+                onChange={() => {}}
               />
               <Button
                 size="icon"
@@ -378,20 +432,23 @@ const Header = () => {
           {/* Right Button */}
           <Link href="/checkout-cart">
             <div className="relative">
-              <Button variant="ghost" className="relative ml text-black"><ShoppingCart className="h-5 w-5" />Cart</Button>
-              {user &&
-                <span className="absolute top-2 text-xs left-5 rounded-full bg-red-500 transform translate-x-1/2 -translate-y-1/2 text-white px-1">3</span>}
+              <Button variant="ghost" className="relative ml text-black">
+                <ShoppingCart className="h-5 w-5" />
+                Cart
+              </Button>
+              {user && (
+                <span className="absolute top-2 text-xs left-5 rounded-full bg-red-500 transform translate-x-1/2 -translate-y-1/2 text-white px-1">
+                  3
+                </span>
+              )}
             </div>
           </Link>
         </div>
-
-
       </div>
 
-      <AuthPage isLoggedOpen={isLoggedOpen} setIsLoginOpen={handleLoginClick}/>
+      <AuthPage isLoggedOpen={isLoggedOpen} setIsLoginOpen={handleLoginClick} />
     </header>
-  )
+  );
+};
 
-}
-
-export default Header
+export default Header;

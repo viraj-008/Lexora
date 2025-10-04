@@ -11,6 +11,8 @@ import wishListRoutes from './routes/wishListRouts'
 import addressRoutes from './routes/addressRoute'
 import userRoutes from './routes/userRoutes'
 import orderRoutes from './routes/orderRoutes'
+import passport from './controllers/strategy/googlestrategy'
+
 
 dotenv.config();
 
@@ -35,6 +37,7 @@ app.use('/api/cart',cartRoute)
 app.use('/api/wishlist',wishListRoutes)
 app.use('/api/user/address',addressRoutes)
 app.use('/api/user',userRoutes)
+app.use(passport.initialize)
 app.use('/api/order',orderRoutes)
 
 app.listen(PORT,()=>{

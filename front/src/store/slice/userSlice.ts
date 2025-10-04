@@ -35,7 +35,12 @@ const userSlice = createSlice({
         state.isLoginDialogOpen = !state.isLoginDialogOpen;
     },
     authStatus:(state)=>{
-        state.isLoggedIn = true
+        state.isLoggedIn = true;
+        // Check if there was a Google login in progress
+        if (typeof window !== 'undefined' && localStorage.getItem('googleLoginInProgress')) {
+            state.isLoginDialogOpen = false;
+            localStorage.removeItem('googleLoginInProgress');
+        }
     }
 
     }

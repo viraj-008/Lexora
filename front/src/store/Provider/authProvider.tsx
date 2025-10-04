@@ -1,4 +1,4 @@
-import { Children, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useVerifyAuthMutation } from "../api";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
@@ -6,7 +6,7 @@ import { logOut, setEmailVerified, setUser } from "../slice/userSlice";
 import BookLoader from "@/lib/BookLoader";
 import { ReactNode } from "react";
 
-export default function AuthCheck({children} : {children:React.ReactNode}){
+export default function AuthCheck({children} : {children:ReactNode}){
    const [veryfyAuth,{isLoading}]=useVerifyAuthMutation()
    const [isCheckingAuth,setIsCheckingAuth]=useState(true)
    const dispatch= useDispatch();
@@ -16,7 +16,8 @@ export default function AuthCheck({children} : {children:React.ReactNode}){
    useEffect(()=>{
       const checkAuth = async()=>{
         try{
-                const response = await veryfyAuth().unwrap()
+                // call the mutation trigger with undefined to satisfy the generated signature
+                const response = await veryfyAuth({}).unwrap()
                 if(response.success){
                     // response.data contains user object from server
                     dispatch(setUser(response.data))

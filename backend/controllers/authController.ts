@@ -118,6 +118,7 @@ export const login = async (req:Request,res:Response)=>{
 export const forgotPassword = async (req:Request,res:Response) =>{
        try{
           const {email}=req.body;
+          console.log(email+" here ")
           const user = await  User.findOne({email:email});
           if(!user){
             return response(res,400,'NO accound found with this email adress')

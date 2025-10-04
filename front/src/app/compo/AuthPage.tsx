@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -9,14 +10,17 @@ import { Lock } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { Base_URL } from "@/store/api";
 import {
-  useForgot_passwordMutation,
+  useForgotPasswordMutation,
   useLoginMutation,
   useRegisterMutation,
 } from "@/store/api";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { authStatus, toggleLoginDialog } from "@/store/slice/userSlice";
+import { useRouter } from "next/navigation";
+import { on } from "events";
 
 interface LoginProps {
   isLoggedOpen: boolean;
@@ -50,11 +54,12 @@ const AuthPage: React.FC<LoginProps> = ({ isLoggedOpen, setIsLoginOpen }) => {
 
   const [register] = useRegisterMutation();
   const [login] = useLoginMutation();
-  const [forgotPassword] = useForgot_passwordMutation();
+  const [forgotPassword] = useForgotPasswordMutation();
   const dispatch = useDispatch();
 
   const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+const router = useRouter()
 
   const {
     register: registerLogin,
@@ -72,9 +77,8 @@ const AuthPage: React.FC<LoginProps> = ({ isLoggedOpen, setIsLoginOpen }) => {
     formState: { errors: forgotPasswordError },
   } = useForm<forgotPasswordFormData>();
 
-
   const onSubmitSignUp = async (data: SignUpFormData) => {
-    console.log(data)
+    console.log(data);
     setSignipLoading(true);
     try {
       const { email, password, name } = data;
@@ -82,40 +86,73 @@ const AuthPage: React.FC<LoginProps> = ({ isLoggedOpen, setIsLoginOpen }) => {
       console.log("signup success", result);
       if (result.success) {
         toast.success(
-          "varyfication link sent to email succusfully, please veyify "
-        );
+          "verification link sent to email successfully, please verify");
         dispatch(toggleLoginDialog());
       }
     } catch (error) {
       console.log(error);
-      // Try to show server-provided error message, fallback to generic
-      const serverMessage = (error as any)?.data?.message || (error as any)?.message || "Registration failed";
-      toast.error(serverMessage as string);
+      toast.error('email already registered');
     } finally {
       setSignipLoading(false);
     }
   };
 
   const onSubmitLogin = async (data: LoginFormData) => {
-    console.log(data)
+    console.log(data);
     setLoginLoading(true);
     try {
       const result = await login(data).unwrap();
-      console.log(result)
+      console.log(result);
       console.log("login success", result);
       if (result.success) {
         toast.success("Login successful");
         dispatch(toggleLoginDialog());
-        dispatch(authStatus())
-        window.location.reload();
+        dispatch(authStatus());
+        window.location.reload()
       }
     } catch (error) {
-      const serverMessage = (error as any)?.data?.message || (error as any)?.message || "Invalid email or password";
-      toast.error(serverMessage as string);
+     console.log(error)
+      toast.error("Invalid email or password");
     } finally {
       setLoginLoading(false);
     }
   };
+
+  const handleGoogleLogin = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setGoogleLoading(true);
+    try {
+      router.push(`${Base_URL}/auth/google`);
+      dispatch(authStatus());
+      dispatch(toggleLoginDialog());
+      setTimeout(() => {
+        toast.success("google login successfully");
+        setIsLoginOpen();
+      }, 3000);
+    } catch (error) {
+      console.log(error);
+      toast.error("email password wrong");
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+   const onSubmitForgotPassword = async (data: forgotPasswordFormData) => {
+    console.log(data);
+    setForgotPasswordLoading(true);
+    try {
+      const result = await forgotPassword(data).unwrap();
+      console.log("forgot password success", result);
+      if (result.success) {
+        toast.success("Password reset link sent to email");
+        setForgotPasswordSuccess(true);}
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to send password reset link");
+    } finally {
+      setForgotPasswordLoading(false);
+    }
+  };  
 
   return (
     <Dialog open={isLoggedOpen} onOpenChange={setIsLoginOpen}>
@@ -145,7 +182,10 @@ const AuthPage: React.FC<LoginProps> = ({ isLoggedOpen, setIsLoginOpen }) => {
               transition={{ duration: 0.3 }}
             >
               <TabsContent value="login" className="space-y-4">
-                <form className="space-y-4" onSubmit={handleLoginSubmit(onSubmitLogin)}>
+                <form
+                  className="space-y-4"
+                  onSubmit={handleLoginSubmit(onSubmitLogin)}
+                >
                   <div className="relative">
                     <Input
                       {...registerLogin("email", {
@@ -218,7 +258,10 @@ const AuthPage: React.FC<LoginProps> = ({ isLoggedOpen, setIsLoginOpen }) => {
                   <div className="flex-1 h-px bg-gray-300"></div>
                 </div>
 
-                <Button className="w-full flex-items-center justify-center gap-3 bg-white text-gray-700 border border-gray-500 hover:bg-gray-100">
+                <Button
+                  onClick={handleGoogleLogin}
+                  className="w-full flex-items-center justify-center gap-3 bg-white text-gray-700 border border-gray-500 hover:bg-gray-100"
+                >
                   {googleLoading ? (
                     <>
                       <Loader2 className="animate-spin" size={18} />
@@ -239,7 +282,10 @@ const AuthPage: React.FC<LoginProps> = ({ isLoggedOpen, setIsLoginOpen }) => {
               </TabsContent>
 
               <TabsContent value="signup" className="space-y-4">
-                <form onSubmit={handleSignUpSubmit(onSubmitSignUp)} className="space-y-4">
+                <form
+                  onSubmit={handleSignUpSubmit(onSubmitSignUp)}
+                  className="space-y-4"
+                >
                   <div className="relative">
                     <Input
                       {...registerSignUp("name", {
@@ -348,7 +394,7 @@ const AuthPage: React.FC<LoginProps> = ({ isLoggedOpen, setIsLoginOpen }) => {
 
               <TabsContent value="forgot" className="space-y-4">
                 {!forgotPasswordSuccess ? (
-                  <form className="space-y-4">
+                  <form className="space-y-4" onSubmit={registerForgotPasswordSubmit(onSubmitForgotPassword)}>
                     <div className="relative">
                       <Input
                         {...registerForgotPassword("email", {
