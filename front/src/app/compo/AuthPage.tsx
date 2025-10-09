@@ -88,6 +88,7 @@ const router = useRouter()
         toast.success(
           "verification link sent to email successfully, please verify");
         dispatch(toggleLoginDialog());
+          router.push('/')
       }
     } catch (error) {
       console.log(error);
@@ -109,6 +110,7 @@ const router = useRouter()
         dispatch(toggleLoginDialog());
         dispatch(authStatus());
         window.location.reload()
+        router.push('/')
       }
     } catch (error) {
      console.log(error)
@@ -128,6 +130,7 @@ const router = useRouter()
       setTimeout(() => {
         toast.success("google login successfully");
         setIsLoginOpen();
+        router.push('/')
       }, 3000);
     } catch (error) {
       console.log(error);

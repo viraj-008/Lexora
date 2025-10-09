@@ -8,9 +8,9 @@ export interface IProducts extends Document{
       condition:string,
       classType:string
       price:number,
-      author:string,
+      author?:string,
       edition?:string,
-      description:string,
+      description?:string,
       finalPrice:number,
       shippingCharge:string,
       seller:mongoose.Types.ObjectId,

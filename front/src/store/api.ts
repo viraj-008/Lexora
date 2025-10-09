@@ -6,6 +6,11 @@ interface ForgotPasswordRequest {
   email: string;
 }
 
+interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
 interface ApiResponse {
   success: boolean;
   message: string;
@@ -98,12 +103,13 @@ export const api= createApi({
           }),
 
         // reset password
-        resetPassword:builder.mutation({
-        query:({token,newPassword})=>({
-            url:API_URLS.RESET_PASSWORD(token),
-            method:"POST",
-            body:{newPassword}      
-        })
+        resetPassword: builder.mutation<ApiResponse, ResetPasswordRequest>({
+          query: ({ token, newPassword }) => ({
+            url: API_URLS.RESET_PASSWORD(token),
+            method: "POST",
+            body: { newPassword },
+            credentials: "include"
+          })
         }),
 
         // verify auth

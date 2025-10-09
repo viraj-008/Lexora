@@ -56,6 +56,7 @@ export const  register = async(req:Request,res:Response)=>{
 export const verifyEmail = async (req:Request,res:Response)=>{
     try{
       const { token } = req.params as { token?: string }
+      console.log(token)
       if(!token) return response(res,400,'verification token missing')
 
       const user = await User.findOne({verificationToken:token})
@@ -74,7 +75,7 @@ export const verifyEmail = async (req:Request,res:Response)=>{
       })
 
       await user.save()
-      return response(res,200,'Email verified successfully',{user:{name:user.name,email:user.email}})
+      return response(res,200,'Email verified successfully 123',{user:{name:user.name,email:user.email}})
 
     }catch(error){
       console.log(error)
@@ -142,21 +143,50 @@ export const forgotPassword = async (req:Request,res:Response) =>{
 export const resetPassword = async (req:Request,res:Response)=>{
     try{
       const { token } = req.params 
-      const {newPassword}=req.body
-      const user = await User.findOne({resetPasswordToken:token,resetPasswordExpires:{$gt: Date.now()}})
-      if(!user) {
-        return response(res,400,"invalid or expired reset password token")
+      const { newPassword } = req.body
+      
+      console.log('Reset password request received:', { 
+        token,
+        hasPassword: !!newPassword,
+        bodyContent: req.body
+      });
+      
+      if (!token) {
+        console.log('Missing token in request');
+        return response(res, 400, "Reset token is required");
+      }
+      
+      if (!newPassword) {
+        console.log('Missing new password in request');
+        return response(res, 400, "New password is required");
       }
 
-      user.password=newPassword
-      user.resetPasswordToken=undefined
-      user.resetPasswordExpires=undefined
-      await user.save()
-      return response(res,200,'your password reset succesfully you can now login with your new password')
+      const user = await User.findOne({
+        resetPasswordToken: token,
+        resetPasswordExpires: { $gt: Date.now() }
+      });
 
-    }catch(error){
-      console.log(error)
-           return response(res,500,'Internal server error , please try later')
+      console.log('User lookup result:', {
+        userFound: !!user,
+        tokenMatches: user?.resetPasswordToken === token,
+        tokenExpired: user?.resetPasswordExpires ? user.resetPasswordExpires < new Date() : true
+      });
+
+      if(!user) {
+        return response(res, 400, "Invalid or expired reset password token");
+      }
+
+      // Set the new password - this will trigger the pre-save hook for hashing
+      user.password = newPassword;
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      
+      await user.save();
+      return response(res, 200, 'Your password has been reset successfully. You can now login with your new password');
+
+    } catch(error) {
+      console.error('Reset password error:', error);
+      return response(res, 500, 'Internal server error, please try later');
 
     
     }

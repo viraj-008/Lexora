@@ -34,7 +34,7 @@ const OrderShema = new Schema<IOrder>({
      user:{type:Schema.Types.ObjectId,res:"User",required:true},
      items:[orderItemsShema],
      totalAmount:Number,
-     shippingAddress: [{type:Schema.Types.ObjectId,ref:"Address"}],
+     shippingAddress: {type:Schema.Types.ObjectId,ref:"Address"},
      paymentStatus:{type:String, enum:['pending' , "complete" , "failed" ],default:"pending"},
      paymentMethode:String,
      paymentDetails:{
