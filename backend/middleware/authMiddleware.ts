@@ -18,6 +18,7 @@ const authenticateUser = async (req:Request,res:Response,next:NextFunction)=>{
     try{
         const secret = process.env.JWT_SECRET || process.env.JWR_SECRET
         const decode = Jwt.verify(token, secret as string) as Jwt.JwtPayload
+        console.log(decode)
         if(!decode){
             return response(res,401,'Not authorized, user not found')
         }

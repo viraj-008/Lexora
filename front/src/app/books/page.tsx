@@ -1,7 +1,7 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { books, filters } from '@/lib/Constent'
+import {filters } from '@/lib/Constent'
 import Link from 'next/link'
 import { Accordion, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { AccordionContent } from '@radix-ui/react-accordion'
@@ -16,6 +16,8 @@ import { Heart } from 'lucide-react'
 import PagiNation from '../compo/PagiNation'
 import NoData from '../compo/NoData'
 import { useRouter } from 'next/navigation'
+import { api, useGetProductByIdQuery, useGetProductsQuery } from '@/store/api'
+import { Bookdetails } from '@/lib/types/type'
 const page = () => {
 
   const router = useRouter()
@@ -26,8 +28,18 @@ const page = () => {
   const [selectedCategory, setSelectedCategory] = useState<string[]>([])
   const [sortOption, setSortOption] = useState('newest')
   const booksPerPage = 6
-  const [isLoading, seIsLoaging] = useState(false)
+  const {data:apiResponse={},isLoading} =useGetProductsQuery({})
+  //  console.log(apiResponse.data,apiResponse.success)
+  const [books,setBooks]=useState<Bookdetails[]>([])
 
+  useEffect(()=>{
+  if(apiResponse.success){
+    console.log(apiResponse)
+    setBooks(apiResponse.data)
+  }
+
+  },[apiResponse])
+  console.log(books)
 const toggleFliter = (section: string, items: string) => {
   const updateFilter = (prev: string[]) => {
     return prev.includes(items) ? prev.filter((item) => item !== items) : [...prev, items]

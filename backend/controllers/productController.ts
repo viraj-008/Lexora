@@ -90,6 +90,7 @@ export const getAllProducts = async (req: Request, res: Response) => {
     const products = await Products.find()
       .sort({ createdAt: -1 })
       .populate("seller", "name email");
+     
     return response(res, 200, "Products fetched succesfully", products);
   } catch (error) {
     console.log(error);

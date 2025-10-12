@@ -32,10 +32,10 @@ const API_URLS={
    UPDATE_USER_PROFILE:(userId:string)=>`${Base_URL}/user/profile/update/${userId}`,
 
    // products related urls
-   PRODUCTS:`${Base_URL}/products`,
-   PRODUCT_BY_ID:(id:string) => `${Base_URL}/products/${id}`,
-   GET_PRODUCT_BY_SELLER_ID:(sellerId:string) => `${Base_URL}/products/seller/${sellerId}`,
-   DELETE_PRODUCT_BY_PRODUCT_ID:(productId:string) => `${Base_URL}/products/seller/${productId}`,
+   PRODUCTS:`${Base_URL}/product`,
+   PRODUCT_BY_ID:(id:string) => `${Base_URL}/product/${id}`,
+   GET_PRODUCT_BY_SELLER_ID:(sellerId:string) => `${Base_URL}/product/seller/${sellerId}`,
+   DELETE_PRODUCT_BY_PRODUCT_ID:(productId:string) => `${Base_URL}/product/seller/${productId}`,
 
 //    cartreleted urls
 CART:(userId:string)=>`${Base_URL}/cart/${userId}`,

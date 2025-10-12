@@ -7,7 +7,9 @@ export const addToCart = async (req:Request,res:Response)=>{
         try{
              const userId= req.id;
              const {productId,quantity}= req.body
+             
              const product = await Products.findById(productId)
+            
              if(!product){
                 return response(res,404,'Product not found')
              }

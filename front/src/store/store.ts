@@ -3,19 +3,26 @@ import { setupListeners } from "@reduxjs/toolkit/query/react";
 import storage  from "redux-persist/lib/storage";
 import { persistReducer,persistStore,FLUSH,REHYDRATE,PAUSE,PURGE,PERSIST,REGISTER } from "redux-persist";
 import  useReducer  from "./slice/userSlice";
-import { use } from "react";
+import cartReducer from './slice/cartSlice';
+import wishlistReducer from './slice/wishlistSlice'
 import { api } from "./api";
 
 //persist config user
 const userPersistConfig = {key:"user",storage,whiteList:["user","isEmailVerified","isLoggedIn"]};
+const cartPersistConfig = {key:"cart",storage,whiteList:["items"]};
+const wishlistPersistConfig = {key:"wishlist",storage};
 
 //wrap reducer with persist config
 const persistedUserReducer = persistReducer(userPersistConfig,useReducer);
+const persistedCartReducer = persistReducer(cartPersistConfig,cartReducer);
+const persistedWishlistReducer = persistReducer(wishlistPersistConfig,wishlistReducer);
 
 export const store = configureStore({ 
     reducer:{
        [api.reducerPath]: api.reducer,
-       user: persistedUserReducer
+       user: persistedUserReducer,
+       cart:persistedCartReducer,
+       wishlist:persistedWishlistReducer
     },
     middleware:(getDefaultMiddleware)=>
         getDefaultMiddleware({
