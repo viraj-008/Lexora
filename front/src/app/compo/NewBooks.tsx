@@ -1,15 +1,27 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { books } from '@/lib/Constent'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
+import { Bookdetails } from '@/lib/types/type'
+import { useGetProductsQuery } from '@/store/api'
 
 function NewBooks() {
   const [currentBookSlide, setCurrentBookSlide] = useState(0)
+
+
+  const {data:apiResponse={},isLoading} =useGetProductsQuery({})
+  const [books,setBooks]=useState<Bookdetails[]>([])
+  useEffect(()=>{
+  if(apiResponse.success){
+    console.log(apiResponse)
+    setBooks(apiResponse.data)
+  }
+  },[apiResponse])
+
 
   const totalSlides = Math.ceil(books.length / 3)
 

@@ -69,7 +69,7 @@ export const CreateProduct = async (req: Request, res: Response) => {
       finalPrice,
       shippingCharge,
       paymentMode,
-      // paymentDetails: parsedPaymentDetails,
+      paymentDetails: parsedPaymentDetails,
       author,
       edition,
       seller: sellerId,
@@ -77,6 +77,7 @@ export const CreateProduct = async (req: Request, res: Response) => {
     });
 
     await Product.save();
+    console.log(Product)
     response(res, 200, "Product created succesfully", Product);
   } catch (error) {
     console.log(error);
@@ -87,6 +88,7 @@ export const CreateProduct = async (req: Request, res: Response) => {
 export const getAllProducts = async (req: Request, res: Response) => {
   
   try {
+     console.log('book')
     const products = await Products.find()
       .sort({ createdAt: -1 })
       .populate("seller", "name email");

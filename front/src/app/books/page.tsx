@@ -31,6 +31,9 @@ const page = () => {
   const {data:apiResponse={},isLoading} =useGetProductsQuery({})
   //  console.log(apiResponse.data,apiResponse.success)
   const [books,setBooks]=useState<Bookdetails[]>([])
+    
+  const searachTearm = new URLSearchParams(window.location.search).get('search') || " "
+  
 
   useEffect(()=>{
   if(apiResponse.success){
@@ -67,7 +70,12 @@ const toggleFliter = (section: string, items: string) => {
     const conditionMatch = selectedCondition.length === 0 || selectedCondition.map((cond) => cond.toLowerCase()).includes(book.condition.toLowerCase());
     const typeMatch = selectedType.length === 0 || selectedType.map((cond) => cond.toLowerCase()).includes(book.classType.toLowerCase());
     const cotegoryMatch = selectedCategory.length === 0 || selectedCategory.map((cond) => cond.toLowerCase()).includes(book.category.toLowerCase());
-    return conditionMatch && typeMatch && cotegoryMatch
+    const searchMatch = searachTearm ?  book.title.toLowerCase().includes(searachTearm.toLocaleLowerCase())
+    || book.author.toLocaleLowerCase().includes(searachTearm.toLocaleLowerCase())
+    || book.category.toLocaleLowerCase().includes(searachTearm.toLocaleLowerCase())
+    || book.subject.toLocaleLowerCase().includes(searachTearm.toLocaleLowerCase())
+    : true
+    return conditionMatch && typeMatch && cotegoryMatch && searchMatch
   })
 
   const sortedBooks = [...filteredBooks].sort((a, b) => {

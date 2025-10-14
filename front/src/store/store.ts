@@ -5,24 +5,28 @@ import { persistReducer,persistStore,FLUSH,REHYDRATE,PAUSE,PURGE,PERSIST,REGISTE
 import  useReducer  from "./slice/userSlice";
 import cartReducer from './slice/cartSlice';
 import wishlistReducer from './slice/wishlistSlice'
+import checkotReducer from './slice/checkoutSlice'
 import { api } from "./api";
 
 //persist config user
 const userPersistConfig = {key:"user",storage,whiteList:["user","isEmailVerified","isLoggedIn"]};
 const cartPersistConfig = {key:"cart",storage,whiteList:["items"]};
 const wishlistPersistConfig = {key:"wishlist",storage};
+const checkoutPersistConfig = {key:"checkout",storage};
 
 //wrap reducer with persist config
 const persistedUserReducer = persistReducer(userPersistConfig,useReducer);
 const persistedCartReducer = persistReducer(cartPersistConfig,cartReducer);
 const persistedWishlistReducer = persistReducer(wishlistPersistConfig,wishlistReducer);
+const persistedCheckoutReducer = persistReducer(checkoutPersistConfig,checkotReducer);
 
 export const store = configureStore({ 
     reducer:{
        [api.reducerPath]: api.reducer,
        user: persistedUserReducer,
        cart:persistedCartReducer,
-       wishlist:persistedWishlistReducer
+       wishlist:persistedWishlistReducer,
+       checkout:persistedCheckoutReducer
     },
     middleware:(getDefaultMiddleware)=>
         getDefaultMiddleware({

@@ -145,6 +145,12 @@ const page = () => {
     );
   }
 
+  if(cart.items.length===0){
+     return(
+      
+     )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12">
       <div className="container mx-auto px-4 max-w-4xl">

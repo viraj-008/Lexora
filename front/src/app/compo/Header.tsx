@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import React from "react";
 import Image from "next/image";
@@ -40,10 +40,11 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { toggleLoginDialog, logOut } from "@/store/slice/userSlice";
-import { useLogoutMutation } from "@/store/api";
+import { useGetCartQuery, useLogoutMutation } from "@/store/api";
 import { useRouter } from "next/navigation";
 import AuthPage from "./AuthPage";
 import toast from "react-hot-toast";
+import { setCart } from "@/store/slice/cartSlice";
 
 const Header = () => {
   const router = useRouter();
@@ -51,12 +52,19 @@ const Header = () => {
   const isLoggedOpen = useSelector(
     (state: RootState) => state.user.isLoginDialogOpen
   );
-
   const [isDropDownOpen, setisDropDownOpen] = useState(false);
-
+  
   const user = useSelector((state: RootState) => state.user.user);
+  const cartItemsCount = useSelector((state: RootState) => state.cart.items.length)
+  const {data:cartData} = useGetCartQuery(user?._id,{skip:!user})
   const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
   const [logoutMutation] = useLogoutMutation();
+  const [SearchTerms,setSearchTearms] = useState("")
+
+  const handleSearch  = ()=>{
+    
+    router.push(`/books?search=${encodeURIComponent(SearchTerms)}`)
+  } 
 
   // Effect to handle Google login completion
   React.useEffect(() => {
@@ -76,7 +84,13 @@ const Header = () => {
     checkGoogleLogin();
   }, [isLoggedIn, user]);
 
-  console.log('User state:', user);
+  useEffect(()=>{
+   if(cartData?.success && cartData?.data){
+    dispatch(setCart(cartData.data))
+   }
+  },[cartData,dispatch])
+
+  
   const userPlaceholder = "";
 
   const handleLoginClick = () => {
@@ -291,15 +305,16 @@ const Header = () => {
               type="text"
               placeholder="Book Name / Author / Subject / Publisher"
               className="w-full pr-10"
-              value=""
-              onChange={() => {}}
+              value={SearchTerms}
+              onChange={(e) => setSearchTearms(e.target.value)}
             />
             <Button
+            onClick={handleSearch}
               size="icon"
               variant="ghost"
               className="absolute right-0 top-1/2 -translate-y-1/2"
             >
-              <Search className="h-5 w-5 cursor-pointer" />
+              <Search className="h-5 w-5  cursor-pointer"  />
             </Button>
           </div>
         </div>
@@ -346,20 +361,28 @@ const Header = () => {
             <MenuItems />
           </DropdownMenuContent>
         </DropdownMenu>
+<div className="relative inline-block">
+  <Link href="/checkout/cart">
+    <Button
+      variant="ghost"
+      className="relative flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 ease-in-out group border border-transparent hover:border-blue-100"
+    >
+      {/* Cart Icon */}
+      <div className="relative">
+      <span className="font-medium text-sm">Cart</span>
+      </div>
+        <ShoppingCart className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
+      
 
-        <Link href="/checkout-cart">
-          <div className="relative">
-            <Button variant="ghost" className="relative ml text-black">
-              <ShoppingCart className="h-5 w-5" />
-              Cart
-            </Button>
-            {user && (
-              <span className="absolute top-2 text-xs left-5 rounded-full bg-red-500 transform translate-x-1/2 -translate-y-1/2 text-white px-1">
-                3
-              </span>
-            )}
-          </div>
-        </Link>
+
+      {/* Badge with enhanced styling */}
+        <span className="absolute -top-2 right-2 flex h-5 w-5 min-w-[20px] items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 text-[11px] font-bold text-white shadow-lg transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+          { cartItemsCount}
+        </span>
+    </Button>
+  </Link>
+</div>
+
       </div>
 
       {/* mobile header*/}
@@ -430,15 +453,15 @@ const Header = () => {
           </div>
 
           {/* Right Button */}
-          <Link href="/checkout-cart">
+          <Link href="/checkout/cart">
             <div className="relative">
               <Button variant="ghost" className="relative ml text-black">
-                <ShoppingCart className="h-5 w-5" />
+                <ShoppingCart className="h-5  w-5" />
                 Cart
               </Button>
-              {user && (
+              {(
                 <span className="absolute top-2 text-xs left-5 rounded-full bg-red-500 transform translate-x-1/2 -translate-y-1/2 text-white px-1">
-                  3
+                 {cartItemsCount}
                 </span>
               )}
             </div>
